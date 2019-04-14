@@ -3,6 +3,7 @@ import json
 from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask
 
+# Setting up requests
 
 SPOTIFY_CLIENT_ID = "fc28786916ef479b977f7dabacfb68ab"
 SPOTIFY_SECRET = "764343631291468c9829c0274616b5f4"
