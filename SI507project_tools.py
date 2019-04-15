@@ -40,7 +40,7 @@ with open("caribou_tracks", 'w') as outfile:
     json.dump(results, outfile, indent=4)
 
 class Track:
-   def __init__(self, track_title, artist_name, album_title):
+    def __init__(self, track_title, artist_name, album_title):
        self.track_title = track_title
        self.artist_name = artist_name
        self.album_title = album_title
@@ -49,7 +49,7 @@ class Track:
         return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
 
 def create_track():
-    
+    return None
 
 
 
