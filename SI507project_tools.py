@@ -11,6 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 # from project planning doc:
 # I expect my database schema to include 3 tables. The entities each table will represent are: Playlist tracks, albums, and Pitchfork album reviews. There will be a many-to-one relationship between playlist tracks and the album table there will be a one-to-one relationship between the albums table and the Pitchfork reviews table.
 
+app = Flask(__name__)
+app.use_reloader = True
+
 app.config['SECRET_KEY'] = 'hard to guess string for app security adgsdfsadfdflsdfsj'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./caribou_playlist.db'
 ## TODO: decide what your new database name will be -- that has to go here
@@ -39,6 +42,8 @@ results = sp.user_playlist(username, playlist_id)
 with open("caribou_tracks", 'w') as outfile:
     json.dump(results, outfile, indent=4)
 
+track_instances = []
+
 class Track:
     def __init__(self, track_title, artist_name, album_title):
        self.track_title = track_title
@@ -49,7 +54,15 @@ class Track:
         return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
 
 def create_track():
+    for song in results["tracks"]["items"]:
+        s_album = song["track"]["album"]["name"]
+        s_artist = song["track"]["artists"][0]["name"]
+        s_title = song["track"]["name"]
+        track = Track(track_title=s_title, artist_name=s_artist, album_title=s_album) 
+        print(track)
+
     return None
 
+create_track()
 
 
