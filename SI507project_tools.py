@@ -121,27 +121,6 @@ def create_track():
 # ------ Setting up P4K album review scraping ------
 
 START_URL = "https://pitchfork.com/reviews/albums/"
-FILENAME = "pitchfork_albums_reviews.json"
-
-PROGRAM_CACHE = Cache(FILENAME)  # kinda a constant
-
-# assuming constants exist as such
-# use a tool to build functionality here
-
-
-def access_page_data(url):
-    data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
-    # unique identifier is the URL where the data lives
-    # get will return none or false if the url does not exist
-    if not data:
-        # get the stuff that lives in that place is there is currently nothing there
-        data = requests.get(url).text
-        # default here with the Cache.set tool is that it will expire in 7 days, which is probs fine, but something to explore
-        PROGRAM_CACHE.set(url, data)
-        # url is identifier; data is what you want to associate with identifier
-    return data
-
-all_pages = access_page_data(START_URL)  # front end code
 
 # For each state, you should scrape data representing all National Sites (which come in many "types" -- National Parks, National Monuments, National Forests, National Military Parks… etc).
 
@@ -153,9 +132,6 @@ list_items = main_soup.find_all("div", {"class":"review"})
 href_list = []
 for review in list_items:
     href_list.append(review.find('a').get('href'))
-
-## CHECK IF ALBUM EXISTS IN DATABASE!!! sometimes there are dual reviews
-## or - new project idea - use existing reviews database --> take that url and scrape site for brief review paragraph
 
 print(href_list)
 
