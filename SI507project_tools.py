@@ -1,10 +1,12 @@
 import spotipy
 import os
 import json
+import requests
 from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask, render_template, session, redirect, url_for
 from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
+from advanced_expiry_caching_fp import Cache
 
 
 # ------ Setting up SQLAlchemy stuff/SQL table ------
@@ -62,8 +64,9 @@ sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 username = "cariboutheband"
 playlist_id = "4Dg0J0ICj9kKTGDyFu0Cv4"
 
-
 results = {}
+
+# ------ Creating a simple cache of my data so I don't get blocked ------
 try:
     cache = open("caribou_tracks", 'r')
     results = json.load(cache)
@@ -88,6 +91,8 @@ except FileNotFoundError:
 #     def __repr__(self):
 #         return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
 
+# ------ Formatting data for the database/making it readable ------
+
 def get_or_create_album(album_name):
     album = Albums.query.filter_by(a_name=album_name).first()
     if album:
@@ -98,7 +103,7 @@ def get_or_create_album(album_name):
         # print("return B") checking which statement is passing
         session.add(album)
         session.commit()
-        album = Albums.query.filter_by(a_name=album_name).first()
+        # album = Albums.query.filter_by(a_name=album_name).first()
         return album
 
 def create_track():
@@ -113,9 +118,50 @@ def create_track():
     return None
 
 
+# ------ Setting up P4K album review scraping ------
+
+START_URL = "https://pitchfork.com/reviews/albums/"
+FILENAME = "pitchfork_albums_reviews.json"
+
+PROGRAM_CACHE = Cache(FILENAME)  # kinda a constant
+
+# assuming constants exist as such
+# use a tool to build functionality here
+
+
+def access_page_data(url):
+    data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
+    # unique identifier is the URL where the data lives
+    # get will return none or false if the url does not exist
+    if not data:
+        # get the stuff that lives in that place is there is currently nothing there
+        data = requests.get(url).text
+        # default here with the Cache.set tool is that it will expire in 7 days, which is probs fine, but something to explore
+        PROGRAM_CACHE.set(url, data)
+        # url is identifier; data is what you want to associate with identifier
+    return data
+
+all_pages = access_page_data(START_URL)  # front end code
+
+# For each state, you should scrape data representing all National Sites (which come in many "types" -- National Parks, National Monuments, National Forests, National Military Parks… etc).
+
+# creating a Soup item
+main_soup = BeautifulSoup(all_pages, features="html.parser")
+
+list_items = main_soup.find_all("div", {"class":"review"})
+# print(list_items)
+href_list = []
+for review in list_items:
+    href_list.append(review.find('a').get('href'))
+
+## CHECK IF ALBUM EXISTS IN DATABASE!!! sometimes there are dual reviews
+## or - new project idea - use existing reviews database --> take that url and scrape site for brief review paragraph
+
+print(href_list)
+
 # Making the program run
 
 if __name__ == "__main__":
     db.create_all()
     create_track()
-    app.run()
+    # app.run()
