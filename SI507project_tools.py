@@ -55,20 +55,29 @@ class Reviews(db.Model):
 
 SPOTIFY_CLIENT_ID = "fc28786916ef479b977f7dabacfb68ab"
 SPOTIFY_SECRET = "764343631291468c9829c0274616b5f4"
-
 client_credentials_manager = SpotifyClientCredentials(
-    client_id=SPOTIFY_CLIENT_ID, client_secret=
-    SPOTIFY_SECRET)
+    client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
 username = "cariboutheband"
 playlist_id = "4Dg0J0ICj9kKTGDyFu0Cv4"
 
-results = sp.user_playlist(username, playlist_id)
 
-# print statement for reference
-with open("caribou_tracks", 'w') as outfile:
-    json.dump(results, outfile, indent=4)
+results = {}
+try:
+    cache = open("caribou_tracks", 'r')
+    results = json.load(cache)
+except FileNotFoundError:
+    with open("caribou_tracks.json", 'w') as outfile:
+        results = sp.user_playlist(username, playlist_id)
+        tracks_info = results['tracks']
+        tracks = tracks_info['items']
+        while tracks_info['next']:
+            tracks_info = sp.next(tracks_info)
+            tracks.extend(tracks_info['items'])
+        results['tracks']['items'] = tracks
+        json.dump(results, outfile, indent=4)
+    
 
 # class Track:
 #     def __init__(self, track_title, artist_name, album_title):
@@ -109,5 +118,4 @@ def create_track():
 if __name__ == "__main__":
     db.create_all()
     create_track()
-
-    app.run(debug=True)
+    app.run()
