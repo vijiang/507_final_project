@@ -1,4 +1,5 @@
 import spotipy
+import os
 import json
 from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask, render_template, session, redirect, url_for
@@ -16,12 +17,39 @@ app.use_reloader = True
 
 app.config['SECRET_KEY'] = 'hard to guess string for app security adgsdfsadfdflsdfsj'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./caribou_playlist.db'
-## TODO: decide what your new database name will be -- that has to go here
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)  # For database use
 session = db.session  # to make queries easy
+
+class Tracks(db.Model):
+    __tablename__= "playlist tracks"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(100), nullable=False)
+    artist = db.Column(db.String(100), nullable=False)
+    album_id = db.Column(db.Integer, db.ForeignKey("albums.id"))
+    album_name = db.relationship("Albums", backref = db.backref("name", lazy="dynamic"))
+
+# many-to-one relationship 
+
+class Albums(db.Model):
+    __tablename__= "albums"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    a_name = db.Column(db.String(100), nullable=False)
+
+# one-to-one relationship
+
+class Reviews(db.Model):
+    __tablename__= "pitchfork reviews"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    
+    r_album = db.relationship("Albums", backref = db.backref("pitchfork reviews", uselist=False))
+    album_id = db.Column(db.Integer, db.ForeignKey("albums.id"))
+    
+    author = db.Column(db.String(100), nullable=False)
+    rating = db.Column(db.Float(2), nullable=False)
+    description = db.Column(db.String(200))
 
 # ------ Setting up Spotify requests ------
 
@@ -42,27 +70,44 @@ results = sp.user_playlist(username, playlist_id)
 with open("caribou_tracks", 'w') as outfile:
     json.dump(results, outfile, indent=4)
 
-track_instances = []
+# class Track:
+#     def __init__(self, track_title, artist_name, album_title):
+#        self.track_title = track_title
+#        self.artist_name = artist_name
+#        self.album_title = album_title
 
-class Track:
-    def __init__(self, track_title, artist_name, album_title):
-       self.track_title = track_title
-       self.artist_name = artist_name
-       self.album_title = album_title
+#     def __repr__(self):
+#         return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
 
-    def __repr__(self):
-        return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
+def get_or_create_album(album_name):
+    album = Albums.query.filter_by(a_name=album_name).first()
+    if album:
+        # print("return A") checking which statement is passing
+        return album
+    else:
+        album = Albums(a_name=album_name)
+        # print("return B") checking which statement is passing
+        session.add(album)
+        session.commit()
+        album = Albums.query.filter_by(a_name=album_name).first()
+        return album
 
 def create_track():
     for song in results["tracks"]["items"]:
         s_album = song["track"]["album"]["name"]
+        album = get_or_create_album(s_album)
         s_artist = song["track"]["artists"][0]["name"]
         s_title = song["track"]["name"]
-        track = Track(track_title=s_title, artist_name=s_artist, album_title=s_album) 
-        print(track)
-
+        track = Tracks(name=s_title, artist=s_artist, album_name=album) 
+        session.add(track)
+        session.commit()
     return None
 
-create_track()
 
+# Making the program run
 
+if __name__ == "__main__":
+    db.create_all()
+    create_track()
+
+    app.run(debug=True)
