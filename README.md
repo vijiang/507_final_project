@@ -9,7 +9,7 @@ This project requests data about Caribou's playlist, *[The Longest Mixtape: 1000
 ## Resources used
 
  - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - web scraping tool to get reviews/ratings from Pitchfork
- - [Spotipy](https://spotipy.readthedocs.io/en/latest/) - Python library supporting the Spotify Web API. Simplified authentication for requests, etc.
+ - [Spotipy](https://spotipy.readthedocs.io/en/latest/) - Python library supporting the Spotify Web API. Simplifies authentication for requests, etc.
 
 ## Notes & assumptions
 
