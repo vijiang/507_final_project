@@ -6,7 +6,13 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask, render_template, session, redirect, url_for
 from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
-from advanced_expiry_caching_fp import Cache
+# from advanced_expiry_caching_fp import Cache
+
+# ------ opening downloaded database table / originally by nsgrantham
+# https://github.com/nsgrantham/pitchfork-reviews
+
+with open("albums.json", "r") as usefile:
+    p4k_database = json.load(usefile)
 
 
 # ------ Setting up SQLAlchemy stuff/SQL table ------
@@ -118,26 +124,77 @@ def create_track():
     return None
 
 
+#  ------ using the pre-created database to search for album ratings
+
+def get_rating(album_name):
+    for an_album in p4k_database:
+        if an_album["album"] == album_name:
+            result = an_album["score"]
+            return result
+        else:
+            result = "Album not found."
+            return result
+
+# maybe i can condense everything into one function? can pass album_name, but also a parameter that indicates what other info i want, like release year, author, url, etc. or is that too much for one function?
+
+
+# ------ searching the "playlist tracks" entity table or a track or artist
+
+def search_for_track(track_name):
+    track = Tracks.query.filter_by(name=track_name).first()
+    if track:
+        return track
+    else:
+        return "This track does not exist in the playlist. Try another one?"
+
+def search_for_artist(artist_name):
+    artist = Tracks.query.filter_by(artist=artist_name).first()
+    if artist:
+        return artist
+    else:
+        return "There are no tracks by this artist in the playlist. Try another one?"
+
+
+
 # ------ Setting up P4K album review scraping ------
 
-START_URL = "https://pitchfork.com/reviews/albums/"
+# START_URL = "https://pitchfork.com/reviews/albums/"
+# FILENAME = "pitchfork_details.json"
 
-# For each state, you should scrape data representing all National Sites (which come in many "types" -- National Parks, National Monuments, National Forests, National Military Parks… etc).
+# PROGRAM_CACHE = Cache(FILENAME)  # kinda a constant
 
-# creating a Soup item
-main_soup = BeautifulSoup(all_pages, features="html.parser")
+# # assuming constants exist as such
+# # use a tool to build functionality here
 
-list_items = main_soup.find_all("div", {"class":"review"})
-# print(list_items)
-href_list = []
-for review in list_items:
-    href_list.append(review.find('a').get('href'))
+# def access_page_data(url):
+#     data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
+#     # unique identifier is the URL where the data lives
+#     # get will return none or false if the url does not exist
+#     if not data:
+#         # get the stuff that lives in that place is there is currently nothing there
+#         data = requests.get(url).text
+#         # default here with the Cache.set tool is that it will expire in 7 days, which is probs fine, but something to explore
+#         PROGRAM_CACHE.set(url, data)
+#         # url is identifier; data is what you want to associate with identifier
+#     return data
 
-print(href_list)
+# all_pages = access_page_data(START_URL)
+
+# # creating a Soup item
+# # main_soup = BeautifulSoup(all_pages, features="html.parser")
+
+# # list_items = main_soup.find_all("div", {"class":"review"})
+# # # print(list_items)
+# # href_list = []
+# # for review in list_items:
+# #     href_list.append(review.find('a').get('href'))
+
+# print(href_list)
 
 # Making the program run
 
 if __name__ == "__main__":
     db.create_all()
     create_track()
+    print(get_rating("Young Forever"))
     # app.run()
