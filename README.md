@@ -15,9 +15,7 @@ This project requests data about Caribou's playlist, *[The Longest Mixtape: 1000
 2. Install all requirements via 
 `pip install -r requirements.txt`
 4. Run the program by entering
-`
-python SI507project_tools.py
-`
+`python SI507project_tools.py`
 
 ## How to use
 
@@ -82,13 +80,9 @@ Resources used:
 
 computer
 
-- [ ] Project includes at least 1 test suite file with reasonable tests
+- [ ] Project includes at least 1 test suite file with reasonable tests in it.
 
-in it.
-
-- [ ] Includes a `requirements.txt` file containing all required modules
-
-to run program
+- [ ] Includes a `requirements.txt` file containing all required modules to run program
 
 - [x] Includes a clear and readable README.md that follows this template
 
