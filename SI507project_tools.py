@@ -13,8 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 with open("albums.json", "r") as usefile:
     p4k_database = json.load(usefile)
-
-
+    
 # ------ Setting up SQLAlchemy stuff/SQL table ------
 
 # from project planning doc:
@@ -86,16 +85,7 @@ except FileNotFoundError:
             tracks.extend(tracks_info['items'])
         results['tracks']['items'] = tracks
         json.dump(results, outfile, indent=4)
-    
 
-# class Track:
-#     def __init__(self, track_title, artist_name, album_title):
-#        self.track_title = track_title
-#        self.artist_name = artist_name
-#        self.album_title = album_title
-
-#     def __repr__(self):
-#         return "{} by {}, from the album {}.".format(self.track_title, self.artist_name, self.album_title)
 
 # ------ Formatting data for the database/making it readable ------
 
@@ -126,16 +116,26 @@ def create_track():
 
 #  ------ using the pre-created database to search for album ratings
 
-def get_rating(album_name):
-    for an_album in p4k_database:
-        if an_album["album"] == album_name:
-            result = an_album["score"]
-            return result
+def get_info(album_name):
+    for entry in p4k_database:
+        if entry["album"] == album_name:
+            score = entry["score"]
+            year = entry["released"]
+            label = entry["label"]
+            author = entry["reviewer"]
+            url = entry["url"]
+            return score, year, label, author, url
         else:
-            result = "Album not found."
-            return result
+            bad_entry = "Album not found!"
+            return bad_entry
 
-# maybe i can condense everything into one function? can pass album_name, but also a parameter that indicates what other info i want, like release year, author, url, etc. or is that too much for one function?
+# ------ grabbing the review page url from the p4k db and scraping for blurb
+
+
+def get_abstract(url): # THIS FUNCTION DOES NOT WORK YET!!
+    main_soup = BeautifulSoup(url, features="html.parser") # might move this out later
+    abstract = main_soup.find_all("div", {"class": "review-detail__abstract"})
+    return abstract
 
 
 # ------ searching the "playlist tracks" entity table or a track or artist
@@ -145,15 +145,15 @@ def search_for_track(track_name):
     if track:
         return track
     else:
-        return "This track does not exist in the playlist. Try another one?"
+        return "{} does not exist in the playlist. Try another one?".format(track_name)
 
 def search_for_artist(artist_name):
     artist = Tracks.query.filter_by(artist=artist_name).first()
     if artist:
+        ### return tracks by that artist
         return artist
     else:
-        return "There are no tracks by this artist in the playlist. Try another one?"
-
+        return "There are no tracks by {} in the playlist. Try another one?".format(artist_name)
 
 
 # ------ Setting up P4K album review scraping ------
@@ -180,21 +180,10 @@ def search_for_artist(artist_name):
 
 # all_pages = access_page_data(START_URL)
 
-# # creating a Soup item
-# # main_soup = BeautifulSoup(all_pages, features="html.parser")
 
-# # list_items = main_soup.find_all("div", {"class":"review"})
-# # # print(list_items)
-# # href_list = []
-# # for review in list_items:
-# #     href_list.append(review.find('a').get('href'))
-
-# print(href_list)
-
-# Making the program run
+# ------ Making the program run
 
 if __name__ == "__main__":
     db.create_all()
     create_track()
-    print(get_rating("Young Forever"))
     # app.run()
