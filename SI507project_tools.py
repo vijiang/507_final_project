@@ -6,7 +6,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask, render_template, session, redirect, url_for
 from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
-# from advanced_expiry_caching_fp import Cache
+from advanced_expiry_caching_fp import Cache
 
 # ------ opening downloaded database table / originally by nsgrantham
 # https://github.com/nsgrantham/pitchfork-reviews
@@ -132,10 +132,28 @@ def get_info(album_name):
 # ------ grabbing the review page url from the p4k db and scraping for blurb
 
 
-def get_abstract(url): # THIS FUNCTION DOES NOT WORK YET!!
-    main_soup = BeautifulSoup(url, features="html.parser") # might move this out later
-    abstract = main_soup.find_all("div", {"class": "review-detail__abstract"})
-    return abstract
+# START_URL = "https://pitchfork.com/reviews/albums/"
+FILENAME = "page_review_text.json"
+PROGRAM_CACHE = Cache(FILENAME)
+
+
+def access_page_data(url):
+    data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
+    # unique identifier is the URL where the data lives
+    # get will return none or false if the url does not exist
+    if not data:
+        # get the stuff that lives in that place is there is currently nothing there
+        data = requests.get(url).text
+        # default here with the Cache.set tool is that it will expire in 7 days, which is probs fine, but something to explore
+        PROGRAM_CACHE.set(url, data)
+        # url is identifier; data is what you want to associate with identifier
+    return data
+
+def get_abstract(url):  # THIS FUNCTION DOES NOT WORK YET!!
+    review_page = access_page_data(url)
+    main_soup = BeautifulSoup(review_page, features="html.parser") # might move this out later
+    abstract = main_soup.find("div", {"class": "review-detail__abstract"})
+    return abstract.text
 
 
 # ------ searching the "playlist tracks" entity table or a track or artist
@@ -186,4 +204,5 @@ def search_for_artist(artist_name):
 if __name__ == "__main__":
     db.create_all()
     create_track()
+    print(get_abstract("https://pitchfork.com/reviews/albums/weyes-blood-titanic-rising/"))
     # app.run()
