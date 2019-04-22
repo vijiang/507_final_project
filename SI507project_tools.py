@@ -44,19 +44,25 @@ class Albums(db.Model):
     __tablename__= "albums"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     a_name = db.Column(db.String(100), nullable=False)
+    score = db.Column(db.String)
+    year = db.Column(db.String)
+    label = db.Column(db.String)
+    author = db.Column(db.String)
+    url = db.Column(db.String)
+    blurb = db.Column(db.String)
 
 # one-to-one relationship
 
-class Reviews(db.Model):
-    __tablename__= "pitchfork reviews"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+# class Reviews(db.Model):
+#     __tablename__= "pitchfork reviews"
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     
-    r_album = db.relationship("Albums", backref = db.backref("pitchfork reviews", uselist=False))
-    album_id = db.Column(db.Integer, db.ForeignKey("albums.id"))
+#     r_album = db.relationship("Albums", backref = db.backref("pitchfork reviews", uselist=False))
+#     album_id = db.Column(db.Integer, db.ForeignKey("albums.id"))
     
-    author = db.Column(db.String(100), nullable=False)
-    rating = db.Column(db.Float(2), nullable=False)
-    description = db.Column(db.String(200))
+#     author = db.Column(db.String(100), nullable=False)
+#     rating = db.Column(db.Float(2), nullable=False)
+#     description = db.Column(db.String(200))
 
 # ------ Setting up Spotify requests ------
 
@@ -95,12 +101,33 @@ def get_or_create_album(album_name):
         # print("return A") checking which statement is passing
         return album
     else:
-        album = Albums(a_name=album_name)
+        album = get_info(album_name)
         # print("return B") checking which statement is passing
         session.add(album)
         session.commit()
         # album = Albums.query.filter_by(a_name=album_name).first()
         return album
+
+#  ------ using the pre-created database to search for album ratings
+
+def get_info(album_name):
+    lower_album=album_name.lower()
+    for entry in p4k_database:
+        if entry["album"].lower() == lower_album:
+            a_score = entry["score"]
+            a_year = entry["released"]
+            a_label = entry["label"]
+            a_author = entry["reviewer"]
+            a_url = entry["url"]
+            try:
+                abs_text = get_abstract(a_url)
+            except:
+                abs_text = "None"
+            album = Albums(a_name=album_name, score = a_score, year = a_year, label = a_label, author = a_author, url = a_url, blurb = abs_text)
+            return album
+    
+    return Albums(a_name=album_name, score="Not available!", year="Not available!", label="Not available!", author="Not available!", url="Not available!", blurb="Not available!")
+       
 
 def create_track():
     for song in results["tracks"]["items"]:
@@ -114,28 +141,11 @@ def create_track():
     return None
 
 
-#  ------ using the pre-created database to search for album ratings
-
-def get_info(album_name):
-    for entry in p4k_database:
-        if entry["album"] == album_name:
-            score = entry["score"]
-            year = entry["released"]
-            label = entry["label"]
-            author = entry["reviewer"]
-            url = entry["url"]
-            return score, year, label, author, url
-        else:
-            bad_entry = "Album not found!"
-            return bad_entry
-
 # ------ grabbing the review page url from the p4k db and scraping for blurb
-
 
 # START_URL = "https://pitchfork.com/reviews/albums/"
 FILENAME = "page_review_text.json"
 PROGRAM_CACHE = Cache(FILENAME)
-
 
 def access_page_data(url):
     data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
@@ -149,7 +159,7 @@ def access_page_data(url):
         # url is identifier; data is what you want to associate with identifier
     return data
 
-def get_abstract(url):  # THIS FUNCTION DOES NOT WORK YET!!
+def get_abstract(url):  
     review_page = access_page_data(url)
     main_soup = BeautifulSoup(review_page, features="html.parser") # might move this out later
     abstract = main_soup.find("div", {"class": "review-detail__abstract"})
@@ -161,9 +171,11 @@ def get_abstract(url):  # THIS FUNCTION DOES NOT WORK YET!!
 def search_for_track(track_name):
     track = Tracks.query.filter_by(name=track_name).first()
     if track:
-        return track
+        yes_album = track.album_id
+        return "{} by {}, from the album {}, is in this playlist.".format(track.name, track.artist, track.album_name), yes_album
     else:
-        return "{} does not exist in the playlist. Try another one?".format(track_name)
+        no_album = None
+        return "{} does not exist in the playlist. Try another one?".format(track_name), no_album
 
 def search_for_artist(artist_name):
     artist = Tracks.query.filter_by(artist=artist_name).first()
@@ -174,29 +186,21 @@ def search_for_artist(artist_name):
         return "There are no tracks by {} in the playlist. Try another one?".format(artist_name)
 
 
-# ------ Setting up P4K album review scraping ------
 
-# START_URL = "https://pitchfork.com/reviews/albums/"
-# FILENAME = "pitchfork_details.json"
 
-# PROGRAM_CACHE = Cache(FILENAME)  # kinda a constant
+# ------ Flask routes
 
-# # assuming constants exist as such
-# # use a tool to build functionality here
+@app.route('/<name>')
+def index_route(name):
+    visitor = name
+    return render_template('index_template.html', name=visitor)
 
-# def access_page_data(url):
-#     data = PROGRAM_CACHE.get(url)  # get data associated with that identifier
-#     # unique identifier is the URL where the data lives
-#     # get will return none or false if the url does not exist
-#     if not data:
-#         # get the stuff that lives in that place is there is currently nothing there
-#         data = requests.get(url).text
-#         # default here with the Cache.set tool is that it will expire in 7 days, which is probs fine, but something to explore
-#         PROGRAM_CACHE.set(url, data)
-#         # url is identifier; data is what you want to associate with identifier
-#     return data
+@app.route('/check/song/<title>')
+def check_song(title):
+   song_result, album_result = search_for_track(title)
+   print(song_result)
+   return None
 
-# all_pages = access_page_data(START_URL)
 
 
 # ------ Making the program run
@@ -204,5 +208,5 @@ def search_for_artist(artist_name):
 if __name__ == "__main__":
     db.create_all()
     create_track()
-    print(get_abstract("https://pitchfork.com/reviews/albums/weyes-blood-titanic-rising/"))
+    print(search_for_track('Both Sides Now'))
     # app.run()
