@@ -132,14 +132,27 @@ def get_info(album_name, artist_name):
        
 
 def create_track():
-    for song in results["tracks"]["items"]:
-        s_album = song["track"]["album"]["name"]
-        s_artist = song["track"]["artists"][0]["name"]
-        s_title = song["track"]["name"]
-        album = get_or_create_album(s_album, s_artist)
-        track = Tracks(name=s_title, artist=s_artist, album_name=album)
-        session.add(track)
-        session.commit()
+    for dict in results["tracks"]["items"]:
+        # print("track name", dict["track"]["name"])
+        # print("artist name", dict["track"]["artists"][0]["name"])
+
+        song = Tracks.query.filter_by(
+            name=dict["track"]["album"]["name"], 
+            artist=dict["track"]["artists"][0]["name"]).first()
+        
+        if song:
+            print(song)
+            return None
+       
+        else:
+            s_album = dict["track"]["album"]["name"]
+            s_artist = dict["track"]["artists"][0]["name"]
+            s_title = dict["track"]["name"]
+            album = get_or_create_album(s_album, s_artist)
+            track = Tracks(name=s_title, artist=s_artist, album_name=album)
+            session.add(track)
+            session.commit()
+    
     return None
 
 
@@ -211,7 +224,6 @@ def check_artist(artistname):
         return "There are {} song(s) by {} in this playlist: {}.".format(len(tracklist), artistname, ", ".join(tracklist))
     else:
         return "There doesn't seem to be any songs by {} in this playlist. Try another artist?".format(artistname)
-
 
 # ------ Making the program run
 
