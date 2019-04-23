@@ -8,16 +8,17 @@ from bs4 import BeautifulSoup
 from flask_sqlalchemy import SQLAlchemy
 from advanced_expiry_caching_fp import Cache
 
-# ------ opening downloaded database table / originally by nsgrantham
-# https://github.com/nsgrantham/pitchfork-reviews
+
+# # ------ opening downloaded database table / originally by nsgrantham
+# # https://github.com/nsgrantham/pitchfork-reviews
 
 with open("albums.json", "r") as usefile:
     p4k_database = json.load(usefile)
     
-# ------ Setting up SQLAlchemy stuff/SQL table ------
+# # ------ Setting up SQLAlchemy stuff/SQL table ------
 
-# from project planning doc:
-# I expect my database schema to include 3 tables. The entities each table will represent are: Playlist tracks, albums, and Pitchfork album reviews. There will be a many-to-one relationship between playlist tracks and the album table there will be a one-to-one relationship between the albums table and the Pitchfork reviews table.
+# # from project planning doc:
+# # I expect my database schema to include 3 tables. The entities each table will represent are: Playlist tracks, albums, and Pitchfork album reviews. There will be a many-to-one relationship between playlist tracks and the album table there will be a one-to-one relationship between the albums table and the Pitchfork reviews table.
 
 app = Flask(__name__)
 app.use_reloader = True
@@ -38,7 +39,7 @@ class Tracks(db.Model):
     album_id = db.Column(db.Integer, db.ForeignKey("albums.id"))
     album_name = db.relationship("Albums", backref = db.backref("name", lazy="dynamic"))
 
-# many-to-one relationship 
+# # many-to-one relationship 
 
 class Albums(db.Model):
     __tablename__= "albums"
@@ -64,7 +65,7 @@ class Albums(db.Model):
 #     rating = db.Column(db.Float(2), nullable=False)
 #     description = db.Column(db.String(200))
 
-# ------ Setting up Spotify requests ------
+# # ------ Setting up Spotify requests ------
 
 SPOTIFY_CLIENT_ID = "fc28786916ef479b977f7dabacfb68ab"
 SPOTIFY_SECRET = "764343631291468c9829c0274616b5f4"
@@ -77,7 +78,7 @@ playlist_id = "4Dg0J0ICj9kKTGDyFu0Cv4"
 
 results = {}
 
-# ------ Creating a simple cache of my data so I don't get blocked ------
+# # ------ Creating a simple cache of my data so I don't get blocked ------
 try:
     cache = open("caribou_tracks", 'r')
     results = json.load(cache)
@@ -92,16 +93,15 @@ except FileNotFoundError:
         results['tracks']['items'] = tracks
         json.dump(results, outfile, indent=4)
 
-
 # ------ Formatting data for the database/making it readable ------
 
-def get_or_create_album(album_name):
+def get_or_create_album(album_name, artist_name):
     album = Albums.query.filter_by(a_name=album_name).first()
     if album:
         # print("return A") checking which statement is passing
         return album
     else:
-        album = get_info(album_name)
+        album = get_info(album_name, artist_name)
         # print("return B") checking which statement is passing
         session.add(album)
         session.commit()
@@ -109,11 +109,13 @@ def get_or_create_album(album_name):
         return album
 
 #  ------ using the pre-created database to search for album ratings
+# this function does NOT commit or add anything to the database
 
-def get_info(album_name):
+def get_info(album_name, artist_name):
     lower_album=album_name.lower()
+    lower_artist=artist_name.lower()
     for entry in p4k_database:
-        if entry["album"].lower() == lower_album:
+        if entry["album"].lower() == lower_album and entry["artist"].lower() == lower_artist:
             a_score = entry["score"]
             a_year = entry["released"]
             a_label = entry["label"]
@@ -132,10 +134,10 @@ def get_info(album_name):
 def create_track():
     for song in results["tracks"]["items"]:
         s_album = song["track"]["album"]["name"]
-        album = get_or_create_album(s_album)
         s_artist = song["track"]["artists"][0]["name"]
         s_title = song["track"]["name"]
-        track = Tracks(name=s_title, artist=s_artist, album_name=album) 
+        album = get_or_create_album(s_album, s_artist)
+        track = Tracks(name=s_title, artist=s_artist, album_name=album)
         session.add(track)
         session.commit()
     return None
@@ -183,8 +185,6 @@ def search_for_artist(artist_name):
         return False
 
 
-
-
 # ------ Flask routes
 
 @app.route('/<name>')
@@ -211,7 +211,6 @@ def check_artist(artistname):
         return "There are {} song(s) by {} in this playlist: {}.".format(len(tracklist), artistname, ", ".join(tracklist))
     else:
         return "There doesn't seem to be any songs by {} in this playlist. Try another artist?".format(artistname)
-
 
 
 # ------ Making the program run
