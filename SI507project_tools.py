@@ -171,19 +171,16 @@ def get_abstract(url):
 def search_for_track(track_name):
     track = Tracks.query.filter_by(name=track_name).first()
     if track:
-        yes_album = track.album_id
-        return "{} by {}, from the album {}, is in this playlist.".format(track.name, track.artist, track.album_name), yes_album
+        return track
     else:
-        no_album = None
-        return "{} does not exist in the playlist. Try another one?".format(track_name), no_album
+        return False
 
 def search_for_artist(artist_name):
-    artist = Tracks.query.filter_by(artist=artist_name).first()
-    if artist:
-        ### return tracks by that artist
-        return artist
+    tracks = Tracks.query.filter_by(artist=artist_name).all()
+    if len(tracks):
+        return tracks
     else:
-        return "There are no tracks by {} in the playlist. Try another one?".format(artist_name)
+        return False
 
 
 
@@ -197,9 +194,23 @@ def index_route(name):
 
 @app.route('/check/song/<title>')
 def check_song(title):
-   song_result, album_result = search_for_track(title)
-   print(song_result)
-   return None
+    track = search_for_track(title) # this returns an instance of Tracks
+    if track:
+       album = track.album_name # this returns the album instance that is associated with the given track; contains all album info
+       return "{} by {}, from the album {}, is in this playlist. The album was released in {} on the label {}. It has a rating of {} on Pitchfork. {} wrote the review. Here is the opening blurb to the article: {}. Read the full review here: {}".format(track.name, track.artist, album.a_name, album.year, album.label, album.score, album.author, album.blurb, album.url)
+    else:
+        return "{} was not found in this playlist. Maybe try another song?".format(title)
+
+@app.route('/check/artist/<artistname>')
+def check_artist(artistname):
+    tracks = search_for_artist(artistname)
+    if tracks:
+        tracklist = []
+        for song in tracks:
+            tracklist.append(song.name)
+        return "There are {} song(s) by {} in this playlist: {}.".format(len(tracklist), artistname, ", ".join(tracklist))
+    else:
+        return "There doesn't seem to be any songs by {} in this playlist. Try another artist?".format(artistname)
 
 
 
@@ -208,5 +219,4 @@ def check_song(title):
 if __name__ == "__main__":
     db.create_all()
     create_track()
-    print(search_for_track('Both Sides Now'))
-    # app.run()
+    app.run()
