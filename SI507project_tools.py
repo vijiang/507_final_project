@@ -141,8 +141,8 @@ def create_track():
             artist=dict["track"]["artists"][0]["name"]).first()
         
         if song:
-            print(song)
-            return None
+            print(song.name, song.artist)
+            pass
        
         else:
             s_album = dict["track"]["album"]["name"]
