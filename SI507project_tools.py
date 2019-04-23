@@ -139,9 +139,10 @@ def create_track():
         song = Tracks.query.filter_by(
             name=dict["track"]["album"]["name"], 
             artist=dict["track"]["artists"][0]["name"]).first()
+
+        # this might be returning duplicates of tracks because of licensing/geographical issues !
         
         if song:
-            print(song.name, song.artist)
             pass
        
         else:
