@@ -1,0 +1,17 @@
+<!doctype html>
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif|Playfair+Display" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylesheet.css') }}">
+
+
+<body>
+    <div id="container">
+        <h1>You looked up "{{ track }}". Here are the search results:</h1>
+    <p>"{{ track }}" by {{ artist }}, from the album <i>{{ album }}</i>, is in this playlist.</p>
+    <p>However, there doesn't seem to be a Pitchfork review associated with the album this track is on. Sorry about that :( </p>
+    <p>Maybe you could write one?</p>
+<p><a href="/"><i class="far fa-arrow-alt-circle-left"></i> Return to index.</a></p>
+</p>
+</div>
+</body>

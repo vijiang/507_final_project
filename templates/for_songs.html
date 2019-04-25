@@ -1,18 +1,23 @@
 <!doctype html>
-<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif|Playfair+Display" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylesheet.css') }}">
 
 
 <body>
     <div id="container">
-    <p>"{{ track }} by {{ artist }}, from the album <i>{{ album }}</i>, is in this playlist. The album was released in {{ year }} on the label {{ label }}. Out of a possible 10, it has a rating of {{ score }}
+        <h1>You looked up "{{ track }}". Here are the search results:</h1>
+    <p>"{{ track }}" by {{ artist }}, from the album <i>{{ album }}</i>, is in this playlist. The album was released in {{ year }} on the label <b>{{ label }}</b>. Out of a possible 10, it has a rating of <b>{{ score }}</b>
 on Pitchfork.</p>
 
 <p>
-{{ author }} wrote the review. Here is the opening blurb to the article: {{ blurb }} 
+Here is the opening blurb to the article, penned by {{ author }}:</p> 
+<p class="review-text">{{ blurb }}</p>
 
-<br>Read the full review here:
-{{ url }}"
+<br><a href="{{ url }}">Click here to read the full review.</a><br>
+<p>
+<a href="/"><i class="far fa-arrow-alt-circle-left"></i> Return to index.</a>
 </p>
 </div>
 </body>

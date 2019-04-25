@@ -1,12 +1,48 @@
 <!doctype html>
-<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif|Playfair+Display" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylesheet.css') }}">
-
+<body>
 <div id="container">
 <h1>
 1000 Songs for You + Pitchfork Reviews: <br>
 A Flask/Python/SQLAlchemy Application
 </h1>
-<p>Hey {{ name }}! Thanks for checking out this mini app.</p>
-<p>This application will let you search through the song available in a playlist on Spotify; specifically, <a href="https://open.spotify.com/playlist/4Dg0J0ICj9kKTGDyFu0Cv4?si=K8WGBb1YQambb0X-IqK5xQ">"The Longest Mixtape: 1000 Songs for You"</a> by Caribou. </p>
+<p>Hey 
+    {% if name %} 
+    {{ name }}!
+    {% else %}
+    there!
+    {% endif %} Thanks for checking out this mini app.</p>
+    <div id="index-grid">
+
+<img src="{{ url_for('static', filename='images/cover.jpeg') }}">
+
+<div><p>This application will let you search through the songs available in a playlist on Spotify; specifically, <a href="https://open.spotify.com/playlist/4Dg0J0ICj9kKTGDyFu0Cv4?si=K8WGBb1YQambb0X-IqK5xQ">"The Longest Mixtape: 1000 Songs for You"</a> by Caribou. <p>If you're interested, you can read more about him <a href="https://www.mergerecords.com/caribou">here</a>, from Merge Records!</p>
+</p>
 </div>
+
+</div>
+<div class="suggestions">
+    <p>
+Available route paths
+<ul>
+    <li><h2>/(nothing)</h2> - main index-grid</li>
+    <li><h2>/(your name)</h2> - main index that says hello!</li>
+    <li><h2>/check/song/(song title)</h2> - will see if a song with this name is available</li>
+    <li><h2>/check/arist/(artist name)</h2> - will check if this artist has any songs in this playlist</li>
+</ul>
+</p>
+<p>
+Try these suggested routes:
+<ul>
+    <li><a href="/(put your name here)">/(put your name here)</a></li>
+    <li><a href="/check/song/Ghost">/check/song/Ghost</a></li>
+    <li><a href="/check/artist/Moodymann">/check/artist/Moodymann</a></li>
+</ul>
+</p>
+</div>
+
+
+
+</div>
+</body>

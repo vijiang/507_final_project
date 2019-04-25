@@ -203,8 +203,14 @@ def search_for_artist(artist_name):
 
 # ------ Flask routes
 
+
+
+@app.route('/')
+def index_route():
+    return render_template('index_template.html', name=None)
+
 @app.route('/<name>')
-def index_route(name):
+def name_route(name):
     visitor = name
     return render_template('index_template.html', name=visitor)
 
@@ -212,8 +218,12 @@ def index_route(name):
 def check_song(title):
     track = search_for_track(title) # this returns an instance of Tracks
     if track:
-       album = track.album_name # this returns the album instance that is associated with the given track; contains all album info
-       return "{} by {}, from the album {}, is in this playlist. The album was released in {} on the label {}. It has a rating of {} on Pitchfork. {} wrote the review. Here is the opening blurb to the article: {}. Read the full review here: {}".format(track.name, track.artist, album.a_name, album.year, album.label, album.score, album.author, album.blurb, album.url)
+        album = track.album_name
+        if track.album_name.year != "Not available!":
+            # this returns the album instance that is associated with the given track; contains all album info
+            return render_template('for_songs.html', track = track.name, artist = track.artist, album = album.a_name, year = album.year, label = album.label, score = album.score, author = album.author, blurb = album.blurb, url = album.url)
+        else:
+            return render_template('not_available.html', track = track.name, artist = track.artist, album = album.a_name)
     else:
         return "{} was not found in this playlist. Maybe try another song?".format(title)
 
@@ -224,7 +234,7 @@ def check_artist(artistname):
         tracklist = []
         for song in tracks:
             tracklist.append(song.name)
-        return "There are {} song(s) by {} in this playlist: {}.".format(len(tracklist), artistname, ", ".join(tracklist))
+        return render_template('for_artists.html', length=len(tracklist), artist=artistname, tracks=", ".join(tracklist))
     else:
         return "There doesn't seem to be any songs by {} in this playlist. Try another artist?".format(artistname)
 
@@ -233,4 +243,4 @@ def check_artist(artistname):
 if __name__ == "__main__":
     db.create_all()
     create_track()
-    app.run()
+    app.run(debug=True)
