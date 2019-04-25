@@ -132,16 +132,13 @@ def get_info(album_name, artist_name):
        
 
 def create_track():
-    s = []
     for d in results["tracks"]["items"]:
-
         # # print("track name", d["track"]["name"])
         # # print("artist name", d["track"]["artists"][0]["name"])
         # s.append(d["track"]["album"]["name"])
         song = Tracks.query.filter_by(
             name=d["track"]["name"], 
             artist=d["track"]["artists"][0]["name"]).first()
-
         # this might be returning duplicates of tracks because of licensing/geographical issues !
         if song:
             # print(d["track"]["name"])

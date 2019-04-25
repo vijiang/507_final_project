@@ -40,7 +40,7 @@ Resources used:
 
 ## Routes in this application
 
--   Route 1: `/instructions` → shows you a greeting + gives instructions on how to user should enter information
+-   Route 1: `/` → shows you a greeting + gives instructions on how to user should enter information
 -   Route 2: `/check/song/<trackname>` → checks if a certain track exists in the database/playlist
 -   Route 3: `/check/artist/<artistname>` → checks if tracks by a given artist exist in the database/playlist
 
@@ -76,13 +76,11 @@ Resources used:
 
 - [x] Project is submitted as a Github repository
 
-- [ ] Project includes a working Flask application that runs locally on a
+- [x] Project includes a working Flask application that runs locally on a computer
 
-computer
+- [x] Project includes at least 1 test suite file with reasonable tests in it.
 
-- [ ] Project includes at least 1 test suite file with reasonable tests in it.
-
-- [ ] Includes a `requirements.txt` file containing all required modules to run program
+- [x] Includes a `requirements.txt` file containing all required modules to run program
 
 - [x] Includes a clear and readable README.md that follows this template
 
@@ -118,7 +116,7 @@ computer
 
 - [ ] At least one form in your Flask application
 
-- [ ] Templating in your Flask application
+- [x] Templating in your Flask application
 
 - [ ] Inclusion of JavaScript files in the application
 
