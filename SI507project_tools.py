@@ -132,28 +132,30 @@ def get_info(album_name, artist_name):
        
 
 def create_track():
-    for dict in results["tracks"]["items"]:
-        # print("track name", dict["track"]["name"])
-        # print("artist name", dict["track"]["artists"][0]["name"])
+    s = []
+    for d in results["tracks"]["items"]:
 
+        # # print("track name", d["track"]["name"])
+        # # print("artist name", d["track"]["artists"][0]["name"])
+        # s.append(d["track"]["album"]["name"])
         song = Tracks.query.filter_by(
-            name=dict["track"]["album"]["name"], 
-            artist=dict["track"]["artists"][0]["name"]).first()
+            name=d["track"]["name"], 
+            artist=d["track"]["artists"][0]["name"]).first()
 
         # this might be returning duplicates of tracks because of licensing/geographical issues !
-        
         if song:
+            # print(d["track"]["name"])
+            # print(d["track"]["album"]["name"])
+
             pass
-       
         else:
-            s_album = dict["track"]["album"]["name"]
-            s_artist = dict["track"]["artists"][0]["name"]
-            s_title = dict["track"]["name"]
+            s_album = d["track"]["album"]["name"]
+            s_artist = d["track"]["artists"][0]["name"]
+            s_title = d["track"]["name"]
             album = get_or_create_album(s_album, s_artist)
             track = Tracks(name=s_title, artist=s_artist, album_name=album)
             session.add(track)
             session.commit()
-    
     return None
 
 
