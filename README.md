@@ -15,7 +15,8 @@ This project requests data about Caribou's playlist, *[The Longest Mixtape: 1000
 2. Install all requirements via 
 `pip install -r requirements.txt`
 4. Run the program by entering
-`python SI507project_tools.py`
+`python SI507project_tools.py runserver`
+5. You can exit the program by pressing CTRL + C.
 
 ## How to use
 
@@ -36,7 +37,7 @@ In this project, I will be relying the **1,012** tracks returned by the API requ
 Resources used: 
 - [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) - web scraping tool
 - [Spotipy](https://spotipy.readthedocs.io/en/latest/) - Python library supporting the Spotify Web API
-- nsgrantham's [Github repository](https://github.com/nsgrantham/pitchfork-reviews) with some pre-scraped Pitchfork data
+- nsgrantham's [Github repository](https://github.com/nsgrantham/pitchfork-reviews) with some pre-scraped Pitchfork data. I sourced downloaded his "albums" table as JSON file from pitchfork-reviews.db and loaded it into a Python dictionary to use."
 
 ## Routes in this application
 
@@ -90,13 +91,13 @@ Resources used:
 
 - [x] Includes EVERY file needed in order to run the project
 
-- [ ] Includes screenshots and/or clear descriptions of what your project should look like when it is working
+- [x] Includes screenshots and/or clear descriptions of what your project should look like when it is working (please see )
 
 ### Flask Application
 
 - [x] Includes at least 3 different routes
 
-- [ ] View/s a user can see when the application runs that are understandable/legible for someone who has NOT taken this course
+- [x] View/s a user can see when the application runs that are understandable/legible for someone who has NOT taken this course
 
 - [x] Interactions with a database that has at least 2 tables
 
@@ -134,6 +135,6 @@ Resources used:
 
 ### Submission
 
-- [ ] I included a link to my GitHub repository with the correct permissions on Canvas! (Did you though? Did you actually? Are you sure you didn't forget?)
+- [x] I included a link to my GitHub repository with the correct permissions on Canvas! (Did you though? Did you actually? Are you sure you didn't forget?)
 
 - [ ] I included a summary of my project and how I thought it went **in my Canvas submission**!
