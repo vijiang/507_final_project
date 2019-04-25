@@ -1,2 +1,18 @@
+<!doctype html>
 <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Serif" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/stylesheet.css') }}">
+
+
+<body>
+    <div id="container">
+    <p>"{{ track }} by {{ artist }}, from the album <i>{{ album }}</i>, is in this playlist. The album was released in {{ year }} on the label {{ label }}. Out of a possible 10, it has a rating of {{ score }}
+on Pitchfork.</p>
+
+<p>
+{{ author }} wrote the review. Here is the opening blurb to the article: {{ blurb }} 
+
+<br>Read the full review here:
+{{ url }}"
+</p>
+</div>
+</body>
