@@ -201,7 +201,6 @@ def search_for_artist(artist_name):
 # ------ Flask routes
 
 
-
 @app.route('/')
 def index_route():
     return render_template('index_template.html', name=None)
@@ -222,7 +221,7 @@ def check_song(title):
         else:
             return render_template('not_available.html', track = track.name, artist = track.artist, album = album.a_name)
     else:
-        return "{} was not found in this playlist. Maybe try another song?".format(title)
+        return render_template('not_available.html', track=title)
 
 @app.route('/check/artist/<artistname>')
 def check_artist(artistname):
@@ -233,7 +232,7 @@ def check_artist(artistname):
             tracklist.append(song.name)
         return render_template('for_artists.html', length=len(tracklist), artist=artistname, tracks=", ".join(tracklist))
     else:
-        return "There doesn't seem to be any songs by {} in this playlist. Try another artist?".format(artistname)
+        return render_template("artist_unavailable.html", artist=artistname)
 
 # ------ Making the program run
 

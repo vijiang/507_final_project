@@ -8,15 +8,8 @@
 <body>
     <div id="container">
         <h1>You looked up "{{ artist }}". Here are the search results:</h1>
-        {% if artist %}
-    
-        <p>"{{ track }}" by {{ artist }}, from the album <i>{{ album }}</i>, is in this playlist.</p>
-        <p>However, there doesn't seem to be a Pitchfork review associated with the album this track is on. Sorry about that :( </p>
-        <p>Maybe you could write one?</p>
-    
-        {% else %}
-        <p>Doesn't look like this track exists in the playlist. Maybe try searching for another one?</p>
-        {% endif %}
+
+        <p>There does not seem to be any tracks by <b>{{ artist}}</b> in this playlist. Try searching for another one?</p>
 
 <p><a href="/"><i class="far fa-arrow-alt-circle-left"></i> Return to index.</a></p>
 </p>
