@@ -102,6 +102,10 @@ Resources used:
 [requirements.txt](https://github.com/vijiang/507_final_project/blob/master/requirements.txt)
 
 [database_diagram.jpg](https://github.com/vijiang/507_final_project/blob/master/database%20diagram.JPG)
+
+[templates (flask templates folder)](https://github.com/vijiang/507_final_project/tree/master/templates)
+
+[static (css/album image folder)](https://github.com/vijiang/507_final_project/tree/master/static)
   
 
 ---
