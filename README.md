@@ -36,7 +36,6 @@ This project requests data about Caribou's playlist, *[The Longest Mixtape: 1000
 3. To check if a certain song is in the playlist, replace (track) in http://localhost:5000/check/song/(track)
 4. To check if a certain artist had songs in the playlist, replace (artist) in http://localhost:5000/check/artist/(artist)
 
-
 Notes:
 
 In order to simplify the relationships between entities in the database, we can assume the following rules:
@@ -80,27 +79,28 @@ Resources used:
 
 [.gitignore](https://github.com/vijiang/507_final_project/blob/master/.gitignore  ".gitignore")
 
-
 [README.md](https://github.com/vijiang/507_final_project/blob/master/README.md  "README.md")
-
 
 [SI507project_tools.py](https://github.com/vijiang/507_final_project/blob/master/SI507project_tools.py  "SI507project_tools.py")
 
-
 [albums.json](https://github.com/vijiang/507_final_project/blob/master/albums.json  "albums.json")
-
 
 [caribou_playlist.db](https://github.com/vijiang/507_final_project/blob/master/caribou_playlist.db  "caribou_playlist.db")
 
-
 [caribou_tracks.json](https://github.com/vijiang/507_final_project/blob/master/caribou_tracks.json  "caribou_tracks.json")
 
-
-[finalproject_tests.py](https://github.com/vijiang/507_final_project/blob/master/finalproject_tests.py  "finalproject_tests.py")
-
+[SI507project_tools.py](https://github.com/vijiang/507_final_project/blob/master/SI507project_tools.py)
+  
 [pitchfork-reviews.db](https://github.com/vijiang/507_final_project/blob/master/pitchfork-reviews.db  "pitchfork-reviews.db")
 
-[working_shots.pdf](https://github.com/vijiang/507_final_project/blob/master/working_shots.pdf "working-shots.db")
+[advanced_expiry_caching_fp.py](https://github.com/vijiang/507_final_project/blob/master/advanced_expiry_caching_fp.py)
+
+[albums.json](https://github.com/vijiang/507_final_project/blob/master/albums.json)
+
+[page_review_text.json](https://github.com/vijiang/507_final_project/blob/master/page_review_text.json)
+
+[requirements.txt](https://github.com/vijiang/507_final_project/blob/master/requirements.txt)
+  
 
 
 ---
@@ -196,4 +196,4 @@ Resources used:
 
 - [x] I included a link to my GitHub repository with the correct permissions on Canvas! (Did you though? Did you actually? Are you sure you didn't forget?)
  
-- [ ] I included a summary of my project and how I thought it went **in my Canvas submission**!
+- [x] I included a summary of my project and how I thought it went **in my Canvas submission**!
