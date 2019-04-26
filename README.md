@@ -100,8 +100,9 @@ Resources used:
 [page_review_text.json](https://github.com/vijiang/507_final_project/blob/master/page_review_text.json)
 
 [requirements.txt](https://github.com/vijiang/507_final_project/blob/master/requirements.txt)
-  
 
+[database_diagram.jpg](https://github.com/vijiang/507_final_project/blob/master/database%20diagram.JPG)
+  
 
 ---
 
